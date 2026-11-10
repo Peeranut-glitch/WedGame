@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="รวมเกมน่าเล่นหลายแนว เลือกชมเกมที่ชอบได้ด้วยระบบกรองหมวดหมู่">
+  <meta name="theme-color" content="#111318">
+  <title>PLAYROOM — เกมที่ชอบ</title>
+  <style>
+    :root {
+      --ink: #17191f;
+      --muted: #686d78;
+      --paper: #f5f6f8;
+      --white: #ffffff;
+      --line: #e7e9ee;
+      --red: #ff555f;
+      --yellow: #ffe16b;
+      --mint: #9ee9d3;
+      --blue: #9bdcff;
+      --lavender: #c8b6ff;
+      --shadow: 0 14px 34px rgba(22, 25, 34, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Noto Sans Thai", "Tahoma", sans-serif;
+      line-height: 1.6;
+    }
+    button, input { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      color: var(--white);
+      background: #111318;
+      isolation: isolate;
+    }
+    .site-header::before,
+    .site-header::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      border-radius: 50%;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+    .site-header::before {
+      width: 330px; height: 330px;
+      top: -190px; right: 7%;
+      background: rgba(255, 85, 95, .34);
+    }
+    .site-header::after {
+      width: 230px; height: 230px;
+      bottom: -170px; left: 4%;
+      background: rgba(158, 233, 211, .22);
+    }
+    .nav {
+      width: min(1120px, calc(100% - 40px));
+      margin: auto;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: .09em;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      display: grid; place-items: center;
+      border-radius: 11px;
+      color: #17191f;
+      background: var(--yellow);
+      font-size: 1.1rem;
+    }
+    .nav-note { color: #c4c7d0; font-size: .88rem; }
+
+    .hero {
+      width: min(1120px, calc(100% - 40px));
+      margin: auto;
+      min-height: 320px;
+      padding: 62px 0 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .hero-copy { max-width: 660px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      color: var(--yellow);
+      background: rgba(255,255,255,.06);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    h1 {
+      margin: 18px 0 10px;
+      font-size: clamp(2.35rem, 6vw, 4.35rem);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+    }
+    h1 .accent { color: var(--red); }
+    .hero p { margin: 0; max-width: 570px; color: #c6c9d2; font-size: 1.02rem; }
+    .hero-sticker {
+      flex: 0 0 190px;
+      width: 190px; height: 190px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 28px;
+      background: #252832;
+      box-shadow: 12px 12px 0 var(--red);
+      transform: rotate(5deg);
+    }
+    .hero-sticker img {
+      display: block;
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    main { width: min(1120px, calc(100% - 40px)); margin: auto; }
+    .collection { padding: 46px 0 72px; }
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    .section-kicker { margin: 0 0 4px; color: #e34b55; font-size: .78rem; font-weight: 900; letter-spacing: .1em; }
+    h2 { margin: 0; font-size: clamp(1.55rem, 3vw, 2.1rem); line-height: 1.25; }
+    .result-count { color: var(--muted); font-size: .9rem; white-space: nowrap; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .filters { display: flex; flex-wrap: wrap; gap: 9px; }
+    .filter-btn {
+      border: 1px solid #dfe2e8;
+      border-radius: 999px;
+      padding: 9px 16px;
+      color: #424650;
+      background: var(--white);
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 700;
+      transition: transform .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+    }
+    .filter-btn:hover { transform: translateY(-2px); border-color: var(--ink); box-shadow: 0 5px 13px rgba(0,0,0,.08); }
+    .filter-btn.active { border-color: var(--ink); color: var(--white); background: var(--ink); box-shadow: 0 5px 13px rgba(0,0,0,.12); }
+    .search-box { position: relative; min-width: min(100%, 235px); }
+    .search-box span { position: absolute; top: 50%; left: 13px; transform: translateY(-50%); color: #777d87; }
+    .search-box input {
+      width: 100%;
+      border: 1px solid #dfe2e8;
+      border-radius: 999px;
+      outline: none;
+      padding: 10px 15px 10px 39px;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+    .search-box input:focus { border-color: #777d87; box-shadow: 0 0 0 4px rgba(23,25,31,.07); }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 20px;
+    }
+    .game-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: var(--white);
+      box-shadow: 0 5px 18px rgba(22,25,34,.035);
+      transition: transform .23s ease, box-shadow .23s ease, border-color .23s ease;
+    }
+    .game-card:hover { transform: translateY(-7px); border-color: #d2d5dd; box-shadow: var(--shadow); }
+    .game-card[hidden] { display: none; }
+    .game-art {
+      position: relative;
+      height: 178px;
+      overflow: hidden;
+      isolation: isolate;
+      background: #242833;
+    }
+    .game-art img {
+      display: block;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .35s ease;
+    }
+    .game-card:hover .game-art img { transform: scale(1.07); }
+    .game-art::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 42%, rgba(0,0,0,.5));
+    }
+    .art-label {
+      position: absolute;
+      z-index: 2;
+      left: 13px; bottom: 12px;
+      padding: 4px 9px;
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 7px;
+      color: #fff;
+      background: rgba(17,19,24,.72);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      backdrop-filter: blur(6px);
+    }
+    .art-red { background: linear-gradient(135deg, #ff8a8f, #ff555f 55%, #d82e48); }
+    .art-yellow { background: linear-gradient(135deg, #fff0a6, #ffd45c 55%, #ffad45); }
+    .art-blue { background: linear-gradient(135deg, #b9eaff, #71c8f4 55%, #538ee8); }
+    .art-purple { background: linear-gradient(135deg, #e2caff, #b99aff 55%, #8e75e8); }
+    .art-green { background: linear-gradient(135deg, #c4f2cf, #75d69c 55%, #43a98b); }
+    .art-pink { background: linear-gradient(135deg, #ffd3e8, #ff9ec9 55%, #ec6ea9); }
+    .art-orange { background: linear-gradient(135deg, #ffd1a3, #ff9b59 55%, #ed654d); }
+    .art-mint { background: linear-gradient(135deg, #c3fff0, #79dfcb 55%, #48b9b5); }
+
+    .card-content { padding: 16px 16px 17px; }
+    .card-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .tag { display: inline-block; padding: 4px 9px; border-radius: 999px; color: #4b505a; background: #f0f1f4; font-size: .7rem; font-weight: 800; }
+    .game-number { color: #9a9eaa; font-size: .72rem; font-weight: 800; }
+    .game-card h3 { margin: 0 0 6px; font-size: 1.08rem; line-height: 1.35; }
+    .game-card p { min-height: 48px; margin: 0; color: var(--muted); font-size: .84rem; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0f1f4; }
+    .platform { color: #747985; font-size: .74rem; }
+    .rating { color: #20232b; font-size: .78rem; font-weight: 900; }
+    .empty-state {
+      display: none;
+      margin-top: 18px;
+      padding: 36px 18px;
+      border: 1px dashed #cdd1d9;
+      border-radius: 18px;
+      color: var(--muted);
+      background: rgba(255,255,255,.65);
+      text-align: center;
+    }
+    .empty-state.show { display: block; }
+    .empty-state strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: 1.05rem; }
+
+    .site-footer { padding: 24px 20px; color: #c7cad2; background: #111318; text-align: center; font-size: .82rem; }
+    .site-footer strong { color: var(--yellow); }
+
+    @media (max-width: 900px) {
+      .game-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .hero-sticker { flex-basis: 150px; width: 150px; height: 150px; font-size: 4.2rem; }
+    }
+    @media (max-width: 680px) {
+      .nav, .hero, main { width: min(100% - 30px, 540px); }
+      .nav { min-height: 64px; }
+      .nav-note { font-size: .75rem; }
+      .hero { min-height: auto; padding: 48px 0 58px; }
+      .hero-sticker { display: none; }
+      .hero p { font-size: .94rem; }
+      .collection { padding: 36px 0 54px; }
+      .section-heading { align-items: start; flex-direction: column; gap: 6px; }
+      .toolbar { align-items: stretch; }
+      .filters { gap: 7px; }
+      .filter-btn { padding: 8px 12px; font-size: .82rem; }
+      .search-box { width: 100%; }
+      .game-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+      .game-art { height: 145px; }
+      .card-content { padding: 13px; }
+      .game-card h3 { font-size: .98rem; }
+      .game-card p { min-height: 65px; font-size: .79rem; }
+    }
+    @media (max-width: 380px) {
+      .game-grid { grid-template-columns: 1fr; }
+      .game-art { height: 190px; }
+      .game-card p { min-height: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav" aria-label="เมนูหลัก">
+      <a class="brand" href="#home" aria-label="PLAYROOM หน้าแรก">
+        <span class="brand-mark">▶</span>
+        <span>PLAYROOM</span>
+      </a>
+      <span class="nav-note">MY GAME COLLECTION ✦</span>
+    </nav>
+
+    <div class="hero" id="home">
+      <div class="hero-copy">
+        <span class="eyebrow">🎮 GAME ZONE · คลังเกมโปรด</span>
+        <h1>โลกของเกม<br><span class="accent">ที่เราเลือกเอง</span></h1>
+        <p>รวมเกมหลากหลายสไตล์ที่น่าสนใจ เลือกหมวดหมู่ที่ชอบหรือค้นหาชื่อเกม แล้วออกไปสนุกกับโลกใบใหม่ได้เลย</p>
+      </div>
+      <div class="hero-sticker">
+        <img src="https://cdn.mos.cms.futurecdn.net/QotLyoh6LR4VT8KvE3tGze.jpg" alt="ภาพโปรโมตเกม VALORANT" fetchpriority="high" referrerpolicy="no-referrer">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="collection" aria-labelledby="collection-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">DISCOVER YOUR NEXT GAME</p>
+          <h2 id="collection-title">เกมแนะนำทั้งหมด</h2>
+        </div>
+        <span class="result-count" id="resultCount" aria-live="polite">แสดง 8 เกม</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="filters" role="group" aria-label="กรองเกมตามหมวดหมู่">
+          <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">ทั้งหมด</button>
+          <button class="filter-btn" type="button" data-filter="action" aria-pressed="false">แอ็กชัน</button>
+          <button class="filter-btn" type="button" data-filter="rpg" aria-pressed="false">RPG</button>
+          <button class="filter-btn" type="button" data-filter="adventure" aria-pressed="false">ผจญภัย</button>
+          <button class="filter-btn" type="button" data-filter="simulation" aria-pressed="false">จำลองชีวิต</button>
+          <button class="filter-btn" type="button" data-filter="sports" aria-pressed="false">กีฬา</button>
+        </div>
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <input id="searchInput" type="search" placeholder="ค้นหาชื่อเกม..." autocomplete="off" aria-label="ค้นหาชื่อเกม">
+        </label>
+      </div>
+
+      <div class="game-grid" id="gameGrid">
+        <article class="game-card" data-category="adventure" data-name="minecraft">
+          <div class="game-art art-green"><img src="https://mikrotech.co.za/wp-content/uploads/2024/10/minecraft_cover_original.jpg" alt="ภาพปกเกม Minecraft" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">BUILD · EXPLORE</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">ผจญภัย</span><span class="game-number">01 / 08</span></div>
+            <h3>Minecraft</h3>
+            <p>สร้างโลกในแบบของตัวเอง สำรวจพื้นที่และเอาชีวิตรอดจากสิ่งต่าง ๆ</p>
+            <div class="card-footer"><span class="platform">PC · Console · Mobile</span><span class="rating">★ 9.5</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="action" data-name="valorant">
+          <div class="game-art art-red"><img src="https://cdn.mos.cms.futurecdn.net/QotLyoh6LR4VT8KvE3tGze.jpg" alt="ภาพโปรโมตเกม VALORANT" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">TACTICAL · FPS</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">แอ็กชัน</span><span class="game-number">02 / 08</span></div>
+            <h3>VALORANT</h3>
+            <p>เกมยิงมุมมองบุคคลที่หนึ่ง เน้นการวางแผนและการทำงานเป็นทีม</p>
+            <div class="card-footer"><span class="platform">PC</span><span class="rating">★ 9.0</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="rpg" data-name="genshin impact">
+          <div class="game-art art-blue"><img src="https://images.squarespace-cdn.com/content/v1/611d60fe1bdfad3944022ea3/1659168836462-ZDII9AXWBTCUODLLGI71/maxresdefault.jpg" alt="ภาพโปรโมตเกม Genshin Impact" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">FANTASY · RPG</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">RPG</span><span class="game-number">03 / 08</span></div>
+            <h3>Genshin Impact</h3>
+            <p>ออกเดินทางในโลกแฟนตาซี พบตัวละครและเรื่องราวจากดินแดนต่าง ๆ</p>
+            <div class="card-footer"><span class="platform">PC · Console · Mobile</span><span class="rating">★ 9.2</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="action" data-name="elden ring">
+          <div class="game-art art-purple"><img src="https://media.fromsoftware.jp/fromsoftware/jp/static/img/news/20230222_1/2.jpg" alt="ภาพปกเกม ELDEN RING" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">DARK · FANTASY</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">แอ็กชัน</span><span class="game-number">04 / 08</span></div>
+            <h3>ELDEN RING</h3>
+            <p>ผจญภัยในดินแดนอันกว้างใหญ่ ต่อสู้กับศัตรูและบอสสุดท้าทาย</p>
+            <div class="card-footer"><span class="platform">PC · Console</span><span class="rating">★ 9.4</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="simulation" data-name="stardew valley">
+          <div class="game-art art-yellow"><img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1007%2Fs10460-020-10121-w/MediaObjects/10460_2020_10121_Fig1_HTML.jpg" alt="ภาพเกม Stardew Valley" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">FARM · RELAX</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">จำลองชีวิต</span><span class="game-number">05 / 08</span></div>
+            <h3>Stardew Valley</h3>
+            <p>ทำฟาร์ม ปลูกผัก เลี้ยงสัตว์ และใช้ชีวิตอย่างสบายในเมืองเล็ก ๆ</p>
+            <div class="card-footer"><span class="platform">PC · Console · Mobile</span><span class="rating">★ 9.6</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="sports" data-name="ea sports fc">
+          <div class="game-art art-mint"><img src="https://equipe.digital-content-expert.net/out/65d31d48-8ef0-43fb-8b73-053be6f28682_html_9d58daefa557ccc7.png" alt="ภาพปกเกม EA SPORTS FC 25" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">FOOTBALL · SPORTS</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">กีฬา</span><span class="game-number">06 / 08</span></div>
+            <h3>EA SPORTS FC</h3>
+            <p>สร้างทีมฟุตบอลในฝัน เลือกนักเตะและแข่งขันเพื่อคว้าชัยชนะ</p>
+            <div class="card-footer"><span class="platform">PC · Console</span><span class="rating">★ 8.8</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="simulation" data-name="the sims 4">
+          <div class="game-art art-pink"><img src="https://static.wikia.nocookie.net/sims/images/b/bb/Sims_4_cover2.png/revision/latest?cb=20210418211334" alt="ภาพปกเกม The Sims 4" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">LIFE · CREATE</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">จำลองชีวิต</span><span class="game-number">07 / 08</span></div>
+            <h3>The Sims 4</h3>
+            <p>ออกแบบตัวละคร สร้างบ้าน และกำหนดเรื่องราวการใช้ชีวิตได้เอง</p>
+            <div class="card-footer"><span class="platform">PC · Console</span><span class="rating">★ 8.9</span></div>
+          </div>
+        </article>
+
+        <article class="game-card" data-category="rpg" data-name="honkai star rail">
+          <div class="game-art art-orange"><img src="https://miro.medium.com/1%2AZm4wg5T5PO7tzZudbLN2Hg.jpeg" alt="ภาพโปรโมตเกม Honkai: Star Rail" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="art-label">SPACE · RPG</span></div>
+          <div class="card-content">
+            <div class="card-topline"><span class="tag">RPG</span><span class="game-number">08 / 08</span></div>
+            <h3>Honkai: Star Rail</h3>
+            <p>ขึ้นรถไฟข้ามดวงดาว สำรวจจักรวาลและต่อสู้ด้วยระบบเทิร์นเบส</p>
+            <div class="card-footer"><span class="platform">PC · Console · Mobile</span><span class="rating">★ 9.1</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="empty-state" id="emptyState" role="status">
+        <strong>ไม่พบเกมที่ค้นหา</strong>
+        ลองเปลี่ยนหมวดหมู่หรือค้นหาด้วยชื่อเกมอื่น
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>ออกแบบด้วย <strong>HTML · CSS · JavaScript</strong> | PLAYROOM — My Favorite Games</p>
+  </footer>
+
+  <script>
+    // ระบบกรองหมวดหมู่และค้นหาชื่อเกม
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const gameCards = document.querySelectorAll('.game-card');
+    const searchInput = document.getElementById('searchInput');
+    const resultCount = document.getElementById('resultCount');
+    const emptyState = document.getElementById('emptyState');
+
+    let selectedCategory = 'all';
+
+    function updateGames() {
+      const searchText = searchInput.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      gameCards.forEach((card) => {
+        const category = card.dataset.category;
+        const gameName = card.dataset.name;
+        const matchesCategory = selectedCategory === 'all' || category === selectedCategory;
+        const matchesSearch = gameName.includes(searchText);
+        const shouldShow = matchesCategory && matchesSearch;
+
+        card.hidden = !shouldShow;
+        if (shouldShow) visibleCount++;
+      });
+
+      resultCount.textContent = `แสดง ${visibleCount} เกม`;
+      emptyState.classList.toggle('show', visibleCount === 0);
+    }
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedCategory = button.dataset.filter;
+
+        filterButtons.forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle('active', isActive);
+          item.setAttribute('aria-pressed', String(isActive));
+        });
+
+        updateGames();
+      });
+    });
+
+    searchInput.addEventListener('input', updateGames);
+
+    // หากแหล่งภาพไม่พร้อมใช้งาน ให้แสดงสีพื้นหลังสำรองของการ์ดแทนภาพเสีย
+    document.querySelectorAll('.game-art img, .hero-sticker img').forEach((image) => {
+      image.addEventListener('error', () => image.remove());
+    });
+
+    updateGames();
+  </script>
+</body>
+</html>
